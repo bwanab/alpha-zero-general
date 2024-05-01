@@ -103,14 +103,15 @@ class OthelloGame(Game):
 
     @staticmethod
     def display(board):
+        letters = "abcdefgh"
         n = board.shape[0]
         print("   ", end="")
         for y in range(n):
-            print(y, end=" ")
+            print(letters[y], end=" ")
         print("")
         print("-----------------------")
         for y in range(n):
-            print(y, "|", end="")    # print the row #
+            print(y + 1, "|", end="")    # print the row #
             for x in range(n):
                 piece = board[y][x]    # get the piece to print
                 print(OthelloGame.square_content[piece], end=" ")
