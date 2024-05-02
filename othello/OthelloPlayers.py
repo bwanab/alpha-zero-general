@@ -21,12 +21,13 @@ class HumanOthelloPlayer():
         # display(board)
         letters = "abcdefgh"
         valid = self.game.getValidMoves(board, 1)
+        if np.sum(valid) == 1 and valid[np.product(board.shape)] == 1:
+            return np.product(board.shape)
         moves = []
         for i in range(len(valid)):
             if valid[i]:
                 row, col = np.unravel_index(i, board.shape)
                 moves.append(f"{letters[col]}{row+1}")
-                # print("[", int(i/self.game.n), int(i%self.game.n), end="] ")
         print(", ".join(moves), end= ": ")
         while True:
             input_move = input()
@@ -35,18 +36,6 @@ class HumanOthelloPlayer():
                 row = int(input_move[1]) - 1
                 a = np.ravel_multi_index((row, col), board.shape)
                 break
-            # input_a = input_move.split(" ")
-            # if len(input_a) == 2:
-            #     try:
-            #         x,y = [int(i) for i in input_a]
-            #         if ((0 <= x) and (x < self.game.n) and (0 <= y) and (y < self.game.n)) or \
-            #                 ((x == self.game.n) and (y == 0)):
-            #             a = self.game.n * x + y if x != -1 else self.game.n ** 2
-            #             if valid[a]:
-            #                 break
-            #     except ValueError:
-            #         # Input needs to be an integer
-            #         'Invalid integer'
             else:
                 print('Invalid move')
         return a
