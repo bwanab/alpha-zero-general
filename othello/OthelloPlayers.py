@@ -80,3 +80,36 @@ class AZOPlayer():
         resp = requests.get(req)
         js = resp.json()
         return self.xlate_pos(js['last_move'])
+
+from reversi_ai.reversi import GameHasEndedError
+from reversi_ai.reversiai import ReversiAI
+
+class RAIPlayer():
+    def __init__(self, game):
+        self.game = game
+        self.rai_cell_map = {-1: 'w', 0: ' ', 1: 'b'}
+        self.render_cell_map = {-1: 'x', 0: '.', 1: 'o'}
+
+    def play(self, board):
+        rai_board = self.build_rai_board(board)
+
+        try:
+            rai = ReversiAI()
+            r_ai_player = self.rai_cell_map[1]
+            coord = rai.get_next_move(rai_board, r_ai_player)
+            if coord is None:
+                return np.product(board.shape)
+            x = coord.x
+            y = coord.y
+            rval = np.ravel_multi_index([x, y], board.shape)
+        except GameHasEndedError:
+            rval = np.product(board.shape)
+        return rval
+
+    def build_rai_board(self, board):
+        rai_board = []
+        for x in range(8):
+            rai_board.append([])
+            for y in range(8):
+                rai_board[x].append(self.rai_cell_map[board[x, y]])
+        return rai_board
