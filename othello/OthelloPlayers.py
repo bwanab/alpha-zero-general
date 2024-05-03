@@ -1,4 +1,17 @@
 import numpy as np
+from utils import *
+from MCTS import MCTS
+from othello.pytorch.NNet import NNetWrapper as NNet
+
+class NNPlayer():
+    def __init__(self, game):
+        n1 = NNet(game)
+        n1.load_checkpoint('./pretrained_models/othello/pytorch/','8x8_100checkpoints_best.pth.tar')
+        args1 = dotdict({'numMCTSSims': 50, 'cpuct':1.0})
+        self.mcts1 = MCTS(game, n1, args1)
+
+    def play(self, board):
+        return np.argmax(self.mcts1.getActionProb(board, temp=0))
 
 
 class RandomPlayer():
@@ -6,11 +19,15 @@ class RandomPlayer():
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
-        valids = self.game.getValidMoves(board, 1)
-        while valids[a]!=1:
-            a = np.random.randint(self.game.getActionSize())
-        return a
+        # a = np.random.randint(self.game.getActionSize())
+        # valids = self.game.getValidMoves(board, 1)
+        # while valids[a]!=1:
+        #     a = np.random.randint(self.game.getActionSize())
+        # return a
+        moves = self.game.getAllLegalMoves(board, 1)
+        if len(moves) == 0:
+            return np.product(board.shape)
+        return np.random.choice(moves)
 
 
 class HumanOthelloPlayer():
@@ -103,7 +120,11 @@ class RAIPlayer():
             y = coord.y
             rval = np.ravel_multi_index([x, y], board.shape)
         except GameHasEndedError:
-            rval = np.product(board.shape)
+            all_actions = self.game.getAllLegalMoves(board, 1)
+            if len(all_actions) > 0:
+                rval = np.random.choice(all_actions)
+            else:
+                rval = np.product(board.shape)
         return rval
 
     def build_rai_board(self, board):

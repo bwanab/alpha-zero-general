@@ -43,6 +43,11 @@ class OthelloGame(Game):
         b.execute_move(move, player)
         return (b.pieces, -player)
 
+    def getAllLegalMoves(self, board, player):
+        b = Board(self.n)
+        b.pieces = np.copy(board)
+        return [np.ravel_multi_index(x, board.shape) for x in b.get_legal_moves(player)]
+
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
         valids = [0]*self.getActionSize()
