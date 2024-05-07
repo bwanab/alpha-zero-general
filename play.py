@@ -18,11 +18,13 @@ g = OthelloGame(8)
 # all players
 players = {
     "nnp": NNPlayer(g).play,
+    "nnpt":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar').play,
+    "nnpt0":NNPlayer(g, model_dir='./temp/', model_name='temp.pth.tar').play,
     "rp": RandomPlayer(g).play,
     "gp": GreedyOthelloPlayer(g).play,
     "hp": HumanOthelloPlayer(g).play,
     "rai": RAIPlayer(g).play,
-    "azop": AZOPlayer(g).play
+    #"azop": AZOPlayer(g).play
 }
 
 import argparse
@@ -32,11 +34,11 @@ parser = argparse.ArgumentParser(
                 epilog = 'Text at the bottom of help')
 
 parser.add_argument("-g", "--games", default=10)
-parser.add_argument("-1", "--player1", default="nnp")
+parser.add_argument("-1", "--player1", default="nnpt")
 parser.add_argument("-2", "--player2", default="rai")
 parser.add_argument("-v", "--verbose", action='store_true')
 args = parser.parse_args()
 
 arena = Arena.Arena(players[args.player1], players[args.player2], g, display=OthelloGame.display)
 
-print(arena.playGames(args.games, verbose=args.verbose))
+print(arena.playGames(int(args.games), verbose=args.verbose))
