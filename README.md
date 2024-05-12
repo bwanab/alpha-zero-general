@@ -27,6 +27,22 @@ We trained a PyTorch model for 6x6 Othello (~80 iterations, 100 episodes per ite
 
 A concise description of our algorithm can be found [here](https://github.com/suragnair/alpha-zero-general/raw/master/pretrained_models/writeup.pdf).
 
+### Bill's notes:
+After training 8x8 Othello from scratch for approximately 70 iterations the model has gotten to where it can beat the current pretrained 8x8 Othello 
+15 or so times out of 100. It has been improving, but slowly.
+
+I've decided to change course and start over with the pretrained 8x8 model as the base. The goal is to be able to consitently beat https://github.com/sadeqsheikhi/reversi_python_ai which is a heuristic based approach. 
+
+#### First day results
+Using an A100 GPU from paperspace.com:
+
+34 iterations. 5 with the model being accepted. The model went from winning between 15 and 18 games (out of 40) to >30 against the original 8x8 neural net model and against reversi_python_ai (RAI). Much better than I'd anticipated.
+
+#### Day 2
+
+37 iteratons. 5 with model being accepted. The model increased it's gap against RAI from 30 to 36 out of 40. That's a good 90% win ratio. I'll try one more day, but I'd be surprised if it improves much, if any.
+
+
 ### Citation
 
 If you found this work useful, feel free to cite it as
