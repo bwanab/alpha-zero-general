@@ -85,7 +85,9 @@ def response(uuid, board, player, actions, move):
         "available_actions": actions,
         "last_move": move
     }
-    return json.dumps(resp)
+    rval = json.dumps(resp)
+    print(rval)
+    return rval
 
 letters = "abcdefgh"
 
@@ -98,8 +100,8 @@ def get_position(action_desc, shape):
     col = letters.find(action_desc[0])
     return np.ravel_multi_index([row,col], shape)
 
-def get_moves(game, board):
-    valid = game.getValidMoves(board, 1)
+def get_moves(game, board, player):
+    valid = game.getValidMoves(board, player)
     if np.sum(valid) == 1 and valid[np.product(board.shape)] == 1:
         return []
     moves = [get_position_desc(i, board.shape) for i in range(len(valid)) if valid[i]]
@@ -117,7 +119,8 @@ def start(model, player):
     b = g.getInitBoard()
     if player == "o":
         board = build_x_board(b)
-        last_move = "xx"
+        last_move = "zz"
+        p = 1
     else:
         action = net_player(g.getCanonicalForm(b, 1))
         b, p = g.getNextState(b, 1, action)
@@ -125,7 +128,7 @@ def start(model, player):
         board = build_x_board(b)
         last_move = get_position_desc(action, b.shape)
 
-    return response(u, board, player, get_moves(g, b), last_move)
+    return response(u, board, player, get_moves(g, b, p), last_move)
 
 """ function do_play(uuid, action_string, player_color, new_board = nothing)
     g = get(games, uuid, 0)
@@ -178,20 +181,35 @@ def step_play(uuid, board, player, action):
     # do the internal player's response
     # repeat as long as p is not changed to external_player
     #
-    while p != external_player:
+    n_valid_moves = 0   
+    while n_valid_moves == 0:
         next_action = g.ai(g.game.getCanonicalForm(b, p))
+        if next_action == 64:
+            valid_moves = get_moves(g.game, b, -p)
+            return response(uuid, build_x_board(b), num_to_player[-p], valid_moves, "zz")
         b, p = g.game.getNextState(b, p, next_action)
+        valid_moves = get_moves(g.game, b, p)
+        n_valid_moves = len(valid_moves)
+        if n_valid_moves == 0:
+            p = -p
+            if get_moves(g.game, b, p) == []:   # game over
+                return response(uuid, build_x_board(b), num_to_player[p], [], "zx")
 
     player = num_to_player[p]
     board = build_x_board(b)
     last_move = get_position_desc(next_action, b.shape)
 
-    return response(uuid, board, player, get_moves(g.game, b), last_move)
+    return response(uuid, board, player, valid_moves, last_move)
 
 @app.route("/get_models")
 def get_models():
     return ["nntp"]
 
+#"""
 r = start("nnpt", "o")
 r = json.loads(r)
-step_play(r["uuid"], "".join(r["board"]), r["player"], "d3")
+# step_play(r["uuid"], "".join(r["board"]), r["player"], "d3")
+r = step_play(r["uuid"], ".xxxxxx.oxxoox.xoxoooxxxoooxoxxxoxoxoxxxoxxooxxxoxxxxxxx.xxxxx..", "o", "a1")
+print(r)
+#"""
+
