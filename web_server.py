@@ -86,7 +86,7 @@ def response(uuid, board, player, actions, move):
         "last_move": move
     }
     rval = json.dumps(resp)
-    print(rval)
+    # print(rval)
     return rval
 
 letters = "abcdefgh"
@@ -107,13 +107,22 @@ def get_moves(game, board, player):
     moves = [get_position_desc(i, board.shape) for i in range(len(valid)) if valid[i]]
     return moves
 
+def get_probs(g, board, player):
+    valid = g.game.getValidMoves(board, player)
+    if np.sum(valid) == 1 and valid[np.product(board.shape)] == 1:
+        return []
+    probs = g.ai.probs(g.game.getCanonicalForm(board, player))
+    moves = [(get_position_desc(i, board.shape), probs[i]) for i in range(len(valid)) if valid[i]]
+    return moves
+
+
 def build_x_board(b):
     return ["".join(s) for s in np.array([num_to_player[x] for x in b.reshape(np.prod(b.shape))]).reshape(b.shape).tolist()]
 
 @app.route("/start/<model>/<player>")
 def start(model, player):
     g = OthelloGame(8)
-    net_player = NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar').play
+    net_player = NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar')
     u = str(uuid.uuid1())
     games[u] = StoredGame(g, net_player)
     b = g.getInitBoard()
@@ -130,44 +139,6 @@ def start(model, player):
 
     return response(u, board, player, get_moves(g, b, p), last_move)
 
-""" function do_play(uuid, action_string, player_color, new_board = nothing)
-    g = get(games, uuid, 0)
-    if g == 0
-        return "This is an invalid game: try /start to start a new game"
-    end
-    internal_player_color = player_color_map[player_color]
-    # case 1
-    game = g.game
-    player = g.player
-    action_string = 
-    if internal_player_color == g.player_color
-        if new_board !== nothing
-            game.board = [Rep_Board_map[x] for x in new_board]
-            game.curplayer = Rep_Board_map[player_color[1]]
-        end
-        curplayer = game.curplayer
-        action = GI.parse_action(Reversi.GameSpec(), action_string)
-        GI.play!(game, action)
-        if GI.game_terminated(game)
-            return game_over(game, uuid)
-        end
-        
-        if curplayer != game.curplayer
-            make_model_play(player, game)
-        else  # this is case 2
-            PLAYER_REPEATS_ACTION
-        end
-    else  # case 3
-        make_model_play(player, game)
-    end
-
-    if settings["return_json"]
-        return format_json(game, uuid, action_string)
-    else
-        return Reversi.get_render_string(game, is_html=true)
-    end
-end
- """
 @app.route("/step_play/<uuid>/<board>/<player>/<action>")
 def step_play(uuid, board, player, action):
     g = games[uuid]
@@ -183,7 +154,7 @@ def step_play(uuid, board, player, action):
     #
     n_valid_moves = 0   
     while n_valid_moves == 0:
-        next_action = g.ai(g.game.getCanonicalForm(b, p))
+        next_action = g.ai.play(g.game.getCanonicalForm(b, p))
         if next_action == 64:
             valid_moves = get_moves(g.game, b, -p)
             return response(uuid, build_x_board(b), num_to_player[-p], valid_moves, "zz")
@@ -200,6 +171,17 @@ def step_play(uuid, board, player, action):
     last_move = get_position_desc(next_action, b.shape)
 
     return response(uuid, board, player, valid_moves, last_move)
+
+@app.route("/get_action/<uuid>/<board>/<player>")
+def get_action(uuid, board, player):
+    g = games[uuid]
+    p = player_to_num[player]
+    b = np.array([player_to_num[x] for x in board]).reshape((8,8))
+    action = g.ai.play(g.game.getCanonicalForm(b, p))
+    valid_moves = get_moves(g.game, b, p)
+    probs = get_probs(g, b, p)
+    print(probs)
+    return response(uuid, board, player, valid_moves, get_position_desc(action, b.shape))
 
 @app.route("/get_models")
 def get_models():

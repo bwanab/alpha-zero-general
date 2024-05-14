@@ -12,6 +12,9 @@ class NNPlayer():
 
     def play(self, board):
         return np.argmax(self.mcts1.getActionProb(board, temp=0))
+    
+    def probs(self, board):
+        return self.mcts1.getActionProb(board, temp=1.0)
 
 
 class RandomPlayer():
