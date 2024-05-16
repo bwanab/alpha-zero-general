@@ -131,7 +131,7 @@ def start(model, player):
         last_move = "zz"
         p = 1
     else:
-        action = net_player(g.getCanonicalForm(b, 1))
+        action = net_player.play(g.getCanonicalForm(b, 1))
         b, p = g.getNextState(b, 1, action)
         player = num_to_player[p]
         board = build_x_board(b)
@@ -154,6 +154,8 @@ def step_play(uuid, board, player, action):
     #
     n_valid_moves = 0   
     while n_valid_moves == 0:
+        if  g.game.getGameEnded(b, p) != 0:
+            return response(uuid, build_x_board(b), num_to_player[p], [], "zx")
         next_action = g.ai.play(g.game.getCanonicalForm(b, p))
         if next_action == 64:
             valid_moves = get_moves(g.game, b, -p)
@@ -191,7 +193,7 @@ def get_models():
 r = start("nnpt", "o")
 r = json.loads(r)
 # step_play(r["uuid"], "".join(r["board"]), r["player"], "d3")
-r = step_play(r["uuid"], ".xxxxxx.oxxoox.xoxoooxxxoooxoxxxoxoxoxxxoxxooxxxoxxxxxxx.xxxxx..", "o", "a1")
+r = step_play(r["uuid"], "xxxxxxxxxxxxxoxxxxxxxxxxxxxoxxxxxxxxoxxxxxxxxoxxxxxxxxoxxxxxxxx.", "x", "h8")
 print(r)
 #"""
 
