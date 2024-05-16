@@ -4,14 +4,15 @@ from MCTS import MCTS
 from othello.pytorch.NNet import NNetWrapper as NNet
 
 class NNPlayer():
-    def __init__(self, game, model_dir='./pretrained_models/othello/pytorch/', model_name='8x8_100checkpoints_best.pth.tar'):
+    def __init__(self, game, model_dir='./pretrained_models/othello/pytorch/', model_name='8x8_100checkpoints_best.pth.tar', temp=0):
         n1 = NNet(game)
         n1.load_checkpoint(model_dir,model_name)
         args1 = dotdict({'numMCTSSims': 50, 'cpuct':1.0})
         self.mcts1 = MCTS(game, n1, args1)
+        self.temp = 0
 
     def play(self, board):
-        return np.argmax(self.mcts1.getActionProb(board, temp=0))
+        return np.argmax(self.mcts1.getActionProb(board, self.temp))
     
     def probs(self, board):
         return self.mcts1.getActionProb(board, temp=1.0)

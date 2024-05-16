@@ -18,13 +18,15 @@ g = OthelloGame(8)
 # all players
 players = {
     "nnp": NNPlayer(g).play,
-    "nnpt":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar').play,
-    "nnpt0":NNPlayer(g, model_dir='./temp/', model_name='temp.pth.tar').play,
+    "nnpt":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=2).play,
+    "nnpt0":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=0).play,
+    "nnptc":NNPlayer(g, model_dir='./temp/', model_name='current_best.pth.tar').play,
+    "nnptp":NNPlayer(g, model_dir='./temp/', model_name='prev_best.pth.tar').play,
     "rp": RandomPlayer(g).play,
     "gp": GreedyOthelloPlayer(g).play,
     "hp": HumanOthelloPlayer(g).play,
     "rai": RAIPlayer(g).play,
-    #"azop": AZOPlayer(g).play
+    # "azop": AZOPlayer(g).play
 }
 
 import argparse
