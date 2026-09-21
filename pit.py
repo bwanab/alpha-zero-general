@@ -22,11 +22,12 @@ else:
     g = OthelloGame(8)
 
 # all players
+nnp= NNPlayer(g).play
 rp = RandomPlayer(g).play
 gp = GreedyOthelloPlayer(g).play
 hp = HumanOthelloPlayer(g).play
 ai = RAIPlayer(g).play
-# azop = AZOPlayer(g).play
+azop = AZOPlayer(g).play
 
 
 
@@ -41,8 +42,8 @@ mcts1 = MCTS(g, n1, args1)
 n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
 if human_vs_cpu:
-    # player2 = azop
-    player2 = ai
+    player2 = nnp
+    # player2 = ai
     # player2 = rp
 else:
     n2 = NNet(g)

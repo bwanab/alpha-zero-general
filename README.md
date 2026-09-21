@@ -42,6 +42,21 @@ Using an A100 GPU from paperspace.com:
 
 37 iteratons. 5 with model being accepted. The model increased it's gap against RAI from 30 to 36 out of 40. That's a good 90% win ratio. I'll try one more day, but I'd be surprised if it improves much, if any.
 
+#### Day 3
+
+Life intervened and I forgot to record the number of iterations, but very similar to previous two days. Let's call it 35.
+
+The model seemed to regress against RAI from 36 to 30 wins out of 40. But, strangely, when I pit it against the best from Day 2, it also wins 30 out of 40, so it has regressed against my preordained benchmark (RAI), but it beats the version that does better against that benchmark. Note that the benchmark isn't involved in any way in the actual training so it's not over-fitting to beat the benchmark.
+
+#### Day 4
+
+Short day, only 24 iterations with 3 being accepted.
+
+The model "regression" seen previously disappeared completely. The win rate against RAI improved to 39 out of 40!
+
+#### Day 5
+
+Another small bit of regression, still getting 39 out of 40 against RAI. Running against the old AZ model (julia) it wins 32 out of 40. I think I'm getting well towards a level of cost-benefit being too high for more training.
 
 ### Citation
 

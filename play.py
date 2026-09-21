@@ -15,19 +15,26 @@ any agent.
 
 g = OthelloGame(8)
 
+# needed since if the service isn't running the instantiation will fail.
+def getAZOPlayer(players):
+    try:
+        players["azop"] = AZOPlayer(g).play
+    except:
+        pass
+
 # all players
 players = {
     "nnp": NNPlayer(g).play,
     "nnpt":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=2).play,
-    "nnpt0":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=0).play,
+    "nnpt0":NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=2, num_sims=200).play,
     "nnptc":NNPlayer(g, model_dir='./temp/', model_name='current_best.pth.tar').play,
     "nnptp":NNPlayer(g, model_dir='./temp/', model_name='prev_best.pth.tar').play,
     "rp": RandomPlayer(g).play,
     "gp": GreedyOthelloPlayer(g).play,
     "hp": HumanOthelloPlayer(g).play,
     "rai": RAIPlayer(g).play,
-    # "azop": AZOPlayer(g).play
 }
+getAZOPlayer(players)
 
 import argparse
 parser = argparse.ArgumentParser(

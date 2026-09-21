@@ -122,7 +122,7 @@ def build_x_board(b):
 @app.route("/start/<model>/<player>")
 def start(model, player):
     g = OthelloGame(8)
-    net_player = NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar')
+    net_player = NNPlayer(g, model_dir='./temp/', model_name='best.pth.tar', temp=2, num_sims=200)
     u = str(uuid.uuid1())
     games[u] = StoredGame(g, net_player)
     b = g.getInitBoard()
